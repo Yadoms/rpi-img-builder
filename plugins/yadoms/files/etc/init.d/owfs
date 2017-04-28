@@ -1,0 +1,31 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: owfs
+# Required-Start: $remote_fs $syslog $network $named
+# Required-Stop: $remote_fs $syslog $network $named
+# Should-Start: owfs
+# Should-Stop: owfs
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: 1-wire file system mount & update daemon
+# Description: Start and stop 1-wire file system mount & update daemon.
+### END INIT INFO
+CONFFILE=/etc/owfs.conf
+DESC="1-Wire file system mount"
+NAME="owfs"
+DAEMON=/usr/bin/$NAME
+case "$1" in
+start)
+echo "Starting $NAME"
+$DAEMON -c $CONFFILE
+;;
+stop)
+echo "Stopping $NAME"
+killall $NAME
+;;
+*)
+echo "Usage: $N {start|stop}" >&2
+exit 1
+;;
+esac
+exit 0

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -e
+
+
+function makePattern
+{
+  pattern=$1
+
+  # Convert spaces to \s
+  pattern=$(echo $pattern | sed -r 's/\s+/\\s/g')
+
+  # Convert / to \/
+  pattern=$(echo $pattern | sed -r 's/\/+/\\\//g')
+
+  echo $pattern
+}
+
+function uncomment
+{
+  echo 'uncomment $1 line in $2'
+  pattern=$(makePattern "$1")
+  echo pattern = $pattern
+  sed -i '/'$pattern'/s/^#//g' $2
+}
+
+function comment
+{
+  echo 'comment $1 line in $2'
+  pattern=$(makePattern "$1")
+  echo pattern = $pattern
+  echo '/'$pattern'/s/^/#/g'
+  sed -i '/'$pattern'/s/^/#/g' $2
+}
+
+
+# Set-up for PiFace2
+uncomment 'dtparam=spi=on' /boot/config.txt
+
+
+# Set-up for OWFS (supported by DS9490 USB dongle)
+comment 'server: FAKE = DS18S20,DS2405' /etc/owfs.conf
+uncomment 'server: usb = all' /etc/owfs.conf
+uncomment 'mountpoint = /mnt/1wire' /etc/owfs.conf
+uncomment 'allow_other' /etc/owfs.conf
+uncomment 'user_allow_other' /etc/fuse.conf
+echo "Create /mnt/1wire dir..."
+mkdir /mnt/1wire
+echo "Start owfs service at boot..."
+update-rc.d owfs defaults
+echo "Start owserver service at boot..."
+update-rc.d owserver defaults
+
+
+# Set Yadoms be started at boot
+echo "Start yadoms service at boot..."
+update-rc.d yadoms defaults
+
+
