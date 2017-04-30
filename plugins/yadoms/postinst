@@ -53,6 +53,6 @@ update-rc.d owserver defaults
 
 # Set Yadoms be started at boot
 echo "Start yadoms service at boot..."
+sudo chown -R pi:pi /opt/yadoms/
 update-rc.d yadoms defaults
-
 
