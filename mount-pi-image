@@ -1,5 +1,5 @@
 #!/bin/bash
-# file: script.sh
+# file: mount-pi-image
 #
 
 function error

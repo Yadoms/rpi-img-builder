@@ -1,0 +1,65 @@
+#!/bin/bash
+# file: create-yadoms-pi-image
+#
+
+function error
+{
+  echo
+  echo "This script creates the Yadoms Pi image"
+  echo "  It downloads the RaspberryPI.tar.bz2 package from Github and creates the image"
+  echo
+  echo "usage :"
+  echo "  ./create-yadoms-pi-image.sh {version}"
+  echo "with {version} something like '2.0.0-rc.2'"
+  echo
+  exit 1
+}
+
+#Check if sudo
+if [ "$(whoami)" != "root" ]; then
+  echo "Sorry, you are not root"
+  error
+fi
+
+if [ -z "$1" ]
+then
+  echo "Yadoms version is missing"
+  error
+else
+  yadomsVersion=$1
+fi
+
+echo "Download Yadoms package..."
+rm -f Yadoms-*-RaspberryPI.tar.bz2
+wget https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
+
+echo "Inflate Yadoms package..."
+rmdir -r plugins/yadoms/files/opt/yadoms
+mkdir -p plugins/yadoms/files/opt/yadoms
+tar xjf Yadoms-$yadomsVersion-RaspberryPI.tar.bz2 -C plugins/yadoms/files/opt/yadoms --strip 1
+
+echo "Build the image..."
+make
+
+echo Find partition...
+sectorSize=$(fdisk -l $osImageFileImg | sed -rn 's/Sector size \(logical\/physical\): ([0-9]*) bytes \/ ([0-9]*) bytes/\1 /p')
+echo Sector size is $sectorSize bytes
+
+firstSector=$(fdisk -l $osImageFileImg | sed -rn 's/.*\.img2 *([0-9]*) *.*/\1 /p')
+echo First sector is at $firstSector
+
+offset=$(($sectorSize * $firstSector))
+echo Mount position is at $offset
+
+echo Mounting OS image...
+if [ -d img ]; then rmdir img; fi
+mkdir img
+mount -v -o offset=$offset -t ext4 $osImageFileImg img
+
+echo "--- Press Enter to unmount ---"
+read a
+
+echo Unmount image...
+umount img
+
+exit 0
