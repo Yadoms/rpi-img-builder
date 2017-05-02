@@ -51,6 +51,9 @@ echo "Start owserver service at boot..."
 update-rc.d owserver defaults
 
 
+# Patch default yadoms.ini file
+sed -i '/port = 8080/c\port = 80' /opt/yadoms/yadoms.ini
+
 # Set Yadoms be started at boot
 echo "Start yadoms service at boot..."
 sudo chown -R pi:pi /opt/yadoms/
