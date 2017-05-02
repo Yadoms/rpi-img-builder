@@ -63,5 +63,5 @@ cd yadomsScripts
 ````
 
 # Credits
-Thanks for TheSin- for the powerful tool [rpi-img-builder](https://github.com/TheSin-/rpi-img-builder)
+Thanks for [TheSin-](https://github.com/TheSin-) for the powerful tool [rpi-img-builder](https://github.com/TheSin-/rpi-img-builder)
 
