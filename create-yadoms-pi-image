@@ -41,25 +41,4 @@ tar xjf Yadoms-$yadomsVersion-RaspberryPI.tar.bz2 -C plugins/yadoms/files/opt/ya
 echo "Build the image..."
 make
 
-echo Find partition...
-sectorSize=$(fdisk -l $osImageFileImg | sed -rn 's/Sector size \(logical\/physical\): ([0-9]*) bytes \/ ([0-9]*) bytes/\1 /p')
-echo Sector size is $sectorSize bytes
-
-firstSector=$(fdisk -l $osImageFileImg | sed -rn 's/.*\.img2 *([0-9]*) *.*/\1 /p')
-echo First sector is at $firstSector
-
-offset=$(($sectorSize * $firstSector))
-echo Mount position is at $offset
-
-echo Mounting OS image...
-if [ -d img ]; then rmdir img; fi
-mkdir img
-mount -v -o offset=$offset -t ext4 $osImageFileImg img
-
-echo "--- Press Enter to unmount ---"
-read a
-
-echo Unmount image...
-umount img
-
 exit 0
