@@ -1,0 +1,28 @@
+#language: cpp
+
+#limit to git depth to 1 because don't use any git command in this script
+git:
+  depth: 1
+  
+
+before_install:
+# Log configuration variables
+- echo YADOMS_VERSION = ${YADOMS_VERSION}
+- echo YADOMS_UPLOAD_URL = ${YADOMS_UPLOAD_URL}
+
+# Installing dependancies
+- echo 'Installing dependancies...'
+- sudo apt-get install build-essential wget git lzop u-boot-tools binfmt-support qemu qemu-user-static multistrap parted dosfstools
+
+
+script:
+# Yadoms configuration file
+- echo 'Start creating image...'
+- sudo create-yadoms-pi-image ${YADOMS_VERSION}
+
+
+after_success:
+# Upload image
+- echo 'Upload image to ${YADOMS_UPLOAD_URL}...'
+- curl --ftp-create-dirs -T Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip -u $FTP_USER:$FTP_PASSWORD ${YADOMS_UPLOAD_URL}
+
