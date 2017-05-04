@@ -21,8 +21,7 @@ before_install:
 script:
 # Yadoms configuration file
 - echo 'Start creating image...'
-- ls
-- sudo create-yadoms-pi-image ${YADOMS_VERSION}
+- sudo ./create-yadoms-pi-image ${YADOMS_VERSION}
 
 
 after_success:
