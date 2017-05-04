@@ -1,6 +1,7 @@
 #!/bin/bash
 # file: create-yadoms-pi-image
 #
+set -e
 
 function error
 {
@@ -34,11 +35,21 @@ rm -f Yadoms-*-RaspberryPI.tar.bz2
 wget https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
 
 echo "Inflate Yadoms package..."
-rmdir -r plugins/yadoms/files/opt/yadoms
+rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
 tar xjf Yadoms-$yadomsVersion-RaspberryPI.tar.bz2 -C plugins/yadoms/files/opt/yadoms --strip 1
+rm -f Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
 
 echo "Build the image..."
+rm -f *.img
+rm -f *.img.zip
 make
+
+echo "Rename out file..."
+imgFile=$(find . -maxdepth 1 -name "*.img")
+mv $imgFile Yadoms-$yadomsVersion-RaspberryPI.img
+
+echo "Zip image file..."
+zip Yadoms-$yadomsVersion-RaspberryPI.img.zip Yadoms-$yadomsVersion-RaspberryPI.img
 
 exit 0
