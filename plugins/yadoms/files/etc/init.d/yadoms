@@ -13,10 +13,12 @@ case "$1" in
     start)
         # Stop the ntp service
         sudo /etc/init.d/ntp stop
-        # force the time synchronization
+        # Force the time synchronization
         sudo ntpd -q -g
-        # restart the ntp service
+        # Restart the ntp service
         sudo /etc/init.d/ntp start
+        # Ports 0-1024 can only be opened by root, so set a port route 
+        sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
         # Start Yadoms as pi user
         sudo -u pi '/opt/yadoms/yadoms' --daemon
 

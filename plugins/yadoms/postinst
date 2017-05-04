@@ -51,10 +51,6 @@ echo "Start owserver service at boot..."
 update-rc.d owserver defaults
 
 
-# Ports 0-1024 can only be opened by root, so set a port route
-sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
-
-
 # Set Yadoms be started at boot
 echo "Start yadoms service at boot..."
 sudo chown -R pi:pi /opt/yadoms/
