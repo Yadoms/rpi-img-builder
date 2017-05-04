@@ -7,8 +7,8 @@ git:
 
 before_install:
 # Log configuration variables
-- echo YADOMS_VERSION = ${YADOMS_VERSION}
-- echo YADOMS_UPLOAD_URL = ${YADOMS_UPLOAD_URL}
+- echo 'YADOMS_VERSION = ${YADOMS_VERSION}'
+- echo 'YADOMS_UPLOAD_URL = ${YADOMS_UPLOAD_URL}'
 
 # Installing dependancies
 - echo 'Installing dependancies...'
@@ -18,6 +18,7 @@ before_install:
 script:
 # Yadoms configuration file
 - echo 'Start creating image...'
+- ls
 - sudo create-yadoms-pi-image ${YADOMS_VERSION}
 
 
