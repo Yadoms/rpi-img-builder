@@ -33,6 +33,10 @@ function comment
 }
 
 
+# Add serial port access to 'pi' user
+sed -i 's/^dialout:x:.*:$/&pi/' /etc/group
+
+
 # Set-up for PiFace2
 uncomment 'dtparam=spi=on' /boot/config.txt
 
