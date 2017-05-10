@@ -55,6 +55,13 @@ echo "Start owserver service at boot..."
 update-rc.d owserver defaults
 
 
+# Prepare PI3 for wifi activation (but not activated by default)
+echo "Prepare PI3 for wifi activation (but not activated by default)"
+echo 'blacklist brcmfmac' >> /etc/modprobe.d/blacklist.conf
+echo 'blacklist brcmutil' >> /etc/modprobe.d/blacklist.conf
+echo 'blacklist cfg80211' >> /etc/modprobe.d/blacklist.conf
+
+
 # Set Yadoms be started at boot
 echo "Start yadoms service at boot..."
 sudo chown -R pi:pi /opt/yadoms/
