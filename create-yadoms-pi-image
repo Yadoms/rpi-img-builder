@@ -7,14 +7,21 @@ function error
 {
   echo
   echo "This script creates the Yadoms Pi image"
-  echo "  It downloads the RaspberryPI.tar.bz2 package from Github and creates the image"
+  echo "  It downloads the RaspberryPI Yadoms package and creates the image"
   echo
   echo "usage :"
-  echo "  ./create-yadoms-pi-image.sh {version}"
-  echo "with {version} something like '2.0.0-rc.2'"
+  echo "  ./create-yadoms-pi-image.sh {version} [official]"
+  echo
+  echo "with :"
+  echo "  - {version} : something like 2.0.0-rc.4"
+  echo "  - [official] : if given, generate image from official Yadoms release package (from Github releases repo)"
+  echo "                 if not given, generate image from temporary release package (from www.yadoms.com/travis_build/raspberry_pi)"
   echo
   exit 1
 }
+
+#Branch is hard-coded for now
+branch="b2_0_0"
 
 #Check if sudo
 if [ "$(whoami)" != "root" ]; then
@@ -30,15 +37,29 @@ else
   yadomsVersion=$1
 fi
 
+if [ -z "$2" ]
+then
+  echo "*** Generate a NON-OFFICIAL image ***"
+  official=false
+else
+  echo "Generate a OFFICIAL image"
+  official=true
+fi
+
 echo "Download Yadoms package..."
 rm -f Yadoms-*-RaspberryPI.tar.bz2
-wget https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
+if [ "$official" = true ]
+then
+   wget -O yadoms.tar.bz2 https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
+else
+   wget -U 'yadomsAgent/1.0' -O yadoms.tar.bz2 http://yadoms.com/travis_build/raspberry_pi/yadoms-raspberrypi-v$yadomsVersion.$branch.tar.bz2
+fi
 
 echo "Inflate Yadoms package..."
 rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
-tar xjf Yadoms-$yadomsVersion-RaspberryPI.tar.bz2 -C plugins/yadoms/files/opt/yadoms --strip 1
-rm -f Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
+tar xjf yadoms.tar.bz2 -C plugins/yadoms/files/opt/yadoms --strip 1
+rm -f yadoms.tar.bz2
 
 echo "Build the image..."
 rm -f *.img
