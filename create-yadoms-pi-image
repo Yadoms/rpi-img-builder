@@ -20,9 +20,6 @@ function error
   exit 1
 }
 
-#Branch is hard-coded for now
-branch="b2_0_0"
-
 #Check if sudo
 if [ "$(whoami)" != "root" ]; then
   echo "Sorry, you are not root"
@@ -52,14 +49,20 @@ if [ "$official" = true ]
 then
    wget -O yadoms.tar.bz2 https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
 else
-   wget -U 'yadomsAgent/1.0' -O yadoms.tar.bz2 http://yadoms.com/travis_build/raspberry_pi/yadoms-raspberrypi-v$yadomsVersion.$branch.tar.bz2
+   wget -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/travis_build/raspberry_pi/Yadoms-$yadomsVersion-Linux.tar.gz
 fi
 
 echo "Inflate Yadoms package..."
 rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
-tar xjf yadoms.tar.bz2 -C plugins/yadoms/files/opt/yadoms --strip 1
-rm -f yadoms.tar.bz2
+if [ "$official" = true ]
+then
+   tar xjf yadoms.tar.bz2 -C plugins/yadoms/files/opt/yadoms --strip 1
+   rm -f yadoms.tar.bz2
+else
+   tar -zxvf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
+   rm -f yadoms.tar.gz
+fi
 
 echo "Build the image..."
 rm -f *.img
