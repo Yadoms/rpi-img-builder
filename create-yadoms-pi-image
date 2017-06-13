@@ -20,6 +20,13 @@ function error
   exit 1
 }
 
+# Some constants
+# - Image user account login/password
+userAccountLogin="yadoms"
+userAccountPassword="yadoms2017"
+# - Image root account password (same as user account)
+rootAccountPassword=$userAccountPassword
+
 #Check if sudo
 if [ "$(whoami)" != "root" ]; then
   echo "Sorry, you are not root"
@@ -47,27 +54,21 @@ echo "Download Yadoms package..."
 rm -f Yadoms-*-RaspberryPI.tar.bz2
 if [ "$official" = true ]
 then
-   wget -O yadoms.tar.bz2 https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.bz2
+   wget -O yadoms.tar.gz https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
 else
-   wget -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/travis_build/raspberry_pi/Yadoms-$yadomsVersion-Linux.tar.gz
+   wget -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/travis_build/raspberry_pi/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
 fi
 
 echo "Inflate Yadoms package..."
 rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
-if [ "$official" = true ]
-then
-   tar xjf yadoms.tar.bz2 -C plugins/yadoms/files/opt/yadoms --strip 1
-   rm -f yadoms.tar.bz2
-else
-   tar -zxvf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
-   rm -f yadoms.tar.gz
-fi
+tar -zxvf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
+rm -f yadoms.tar.gz
 
 echo "Build the image..."
 rm -f *.img
 rm -f *.img.zip
-make
+make UNAME=$userAccountLogin UPASS=$userAccountPassword RPASS=$rootAccountPassword
 
 echo "Rename out file..."
 imgFile=$(find . -maxdepth 1 -name "*.img")
