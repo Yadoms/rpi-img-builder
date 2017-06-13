@@ -34,6 +34,11 @@ function comment
 
 
 ######################################
+echo "Disable system logging to GPIO serial port to free the serial port..."
+sed 's/ console=\S*//g' /boot/cmdline.txt
+
+
+######################################
 echo "Add serial port access to 'yadoms' user..."
 sed -i 's/^dialout:x:.*:$/&yadoms/' /etc/group
 
