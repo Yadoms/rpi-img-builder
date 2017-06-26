@@ -17,25 +17,28 @@ function makePattern
 
 function uncomment
 {
-  echo 'uncomment $1 line in $2'
+  echo uncomment $1 line in $2
   pattern=$(makePattern "$1")
-  echo pattern = $pattern
   sed -i '/'$pattern'/s/^#//g' $2
 }
 
 function comment
 {
-  echo 'comment $1 line in $2'
+  echo comment $1 line in $2
   pattern=$(makePattern "$1")
-  echo pattern = $pattern
   echo '/'$pattern'/s/^/#/g'
   sed -i '/'$pattern'/s/^/#/g' $2
 }
 
 
 ######################################
+echo "Enable UART..."
+echo 'enable_uart=1' >> /boot/config.txt
+
+
+######################################
 echo "Disable system logging to GPIO serial port to free the serial port..."
-sed 's/ console=\S*//g' /boot/cmdline.txt
+sed -i 's/ console=\S*,115200//g' /boot/cmdline.txt
 
 
 ######################################
