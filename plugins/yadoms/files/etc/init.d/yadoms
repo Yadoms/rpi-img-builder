@@ -8,6 +8,9 @@
 # Short-Description: Yadoms daemon
 # Description:       Yadoms is an opensource domotic server solution.
 ### END INIT INFO
+DESC="Yadoms daemon"
+NAME="yadoms"
+DAEMON=/opt/yadoms/$NAME
 
 case "$1" in
     start)
@@ -20,12 +23,11 @@ case "$1" in
         # Ports 0-1024 can only be opened by root, so set a port route 
         sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
         # Start Yadoms as 'yadoms' user
-        sudo -u yadoms '/opt/yadoms/yadoms' --daemon
-
+        sudo -u yadoms $DAEMON --daemon
         ;;
     stop)
         # Executed commands launched with "stop" parameter (during system halt)
-        killall yadoms
+        killall $NAME
         ;;
     reload|restart)
         $0 stop
