@@ -14,10 +14,10 @@ git:
   
 script:
 #get docker image (ubuntu 17.04, 64bits with package installed)
-- docker pull yadoms/ubuntu_rpi_image_64
+- docker pull yadoms/ubuntu_rpi_image
 
 #start the docker container
-- docker run -dit --privileged --name buildvm yadoms/ubuntu_rpi_image_64
+- docker run -dit --privileged --name buildvm yadoms/ubuntu_rpi_image
 
 #create folder
 - docker exec --privileged buildvm /bin/bash -c "mkdir builder;"
