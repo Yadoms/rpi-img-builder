@@ -5,27 +5,22 @@ language: generic
 dist: trusty
 sudo: required
 
+services:
+- docker
+
 #limit to git depth to 1 because don't use any git command in this script
 git:
   depth: 1
   
-
-before_install:
-# Installing dependancies
-- echo 'Installing dependancies...'
-- sudo apt-get install build-essential wget git lzop u-boot-tools binfmt-support qemu qemu-user-static multistrap parted dosfstools
-
-
 script:
-# Yadoms configuration file
-- echo 'Start creating image...'
-- sudo ./create-yadoms-pi-image ${YADOMS_VERSION}
-
-# Yadoms configuration file
+#get docker image (ubuntu 17.04, 64bits with package installed)
 - docker pull yadoms/ubuntu_rpi_image_64
 
 #start the docker container
-- docker run -d --privileged --name buildvm yadoms/ubuntu_rpi_image_64 /bin/bash -c "mkdir builder;"
+- docker run -dit --privileged --name buildvm yadoms/ubuntu_rpi_image_64
+
+#create folder
+- docker exec --privileged buildvm /bin/bash -c "mkdir builder;"
 
 #copy file to container
 - docker cp ./ buildvm:builder
