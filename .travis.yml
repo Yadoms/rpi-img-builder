@@ -25,7 +25,7 @@ script:
 - docker pull yadoms/ubuntu_rpi_image_64
 
 #start the docker container
-- docker run --privileged --name buildvm yadoms/ubuntu_rpi_image_64 /bin/bash -c "mkdir builder;"
+- docker run -d --privileged --name buildvm yadoms/ubuntu_rpi_image_64 /bin/bash -c "mkdir builder;"
 
 #copy file to container
 - docker cp ./ buildvm:builder
