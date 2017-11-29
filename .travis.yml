@@ -21,6 +21,21 @@ script:
 - echo 'Start creating image...'
 - sudo ./create-yadoms-pi-image ${YADOMS_VERSION}
 
+# Yadoms configuration file
+- docker pull yadoms/ubuntu_rpi_image_64
+
+#start the docker container
+- docker run --privileged --name buildvm yadoms/ubuntu_rpi_image_64 /bin/bash -c "mkdir builder;"
+
+#copy file to container
+- docker cp ./ buildvm:builder
+
+#execute the image building
+- docker exec --privileged buildvm /bin/bash -c "cd builder; ./create-yadoms-pi-image ${YADOMS_VERSION}"
+
+#copy result
+- docker cp buildvm:builder/Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip
+
 
 after_success:
 # Upload image
