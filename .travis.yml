@@ -17,7 +17,7 @@ script:
 - docker pull yadoms/ubuntu_rpi_image_32
 
 #start the docker container
-- docker run -dit --privileged --name buildvm yadoms/ubuntu_rpi_image_32
+- docker run -dit --privileged --name buildvm yadoms/ubuntu_rpi_image_32 /bin/bash "uname -a;"
 
 #display linux version
 - docker exec --privileged buildvm /bin/bash -c "uname -a;"
