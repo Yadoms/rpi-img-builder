@@ -19,6 +19,9 @@ script:
 #start the docker container
 - docker run -dit --privileged --name buildvm yadoms/ubuntu_rpi_image_32
 
+#update
+- docker exec -u root --privileged buildvm /bin/bash -c "apt-get install -qqy qemu-arm-static"
+
 #execute the image building
 - docker exec -u root --privileged buildvm /bin/bash -c "mkdir builder;"
 
