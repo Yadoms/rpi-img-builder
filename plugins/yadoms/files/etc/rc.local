@@ -1,0 +1,29 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+if ! ifconfig wlan0 | grep -q "inet addr:" ; then
+   echo 'try to connect to a WIFI network...'
+   wpa_cli scan
+   # Find all networks WPS compatible and push button ready, and select the closer
+   routerMacAddress=$(wpa_cli scan_results | grep WPS-PBC | sort -r -k3 | awk 'END{print $1}')
+   echo $routerMacAddress
+   if [ -n "$routerMacAddress" ] ; then
+      echo "Found WPS router in '$routerMacAddress'"
+      wpa_cli wps_pbc $routerMacAddress
+   else
+      echo "No WPS router found"
+   fi
+else
+   echo 'No WIFI interface or network already registered'
+fi
+exit 0
