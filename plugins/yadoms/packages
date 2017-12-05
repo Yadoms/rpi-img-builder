@@ -1,1 +1,1 @@
-libpq5 owfs ow-shell fuse ntp iptables python usbutils pciutils wpasupplicant wireless-tools
+libpq5 owfs ow-shell fuse ntp iptables python python-pip python-RPi.GPIO usbutils pciutils wpasupplicant wireless-tools
