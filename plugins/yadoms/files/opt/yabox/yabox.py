@@ -1,8 +1,10 @@
 ﻿#!/usr/bin/env python
 #
-# Description : this script manage button and leds of the Yabox
+# Description : this daemon manage button and leds of the Yabox
 #
 # Note : this script must be launch as root (access to GPIO needs root rights)
+#
+# Usage: yabox start|stop|restart
 #
 # Used GPIOs :
 # - 21 : INPUT(with internal pull-up) : button
@@ -21,14 +23,21 @@ DisableReset = 6
 # Button timings (ms)
 ButtonDebounceDuration = 20
 ButtonShortPressDuration = 100
-ButtonLongPressDuration = 2000
+ButtonLongPressDuration = 5000
+
+# Number of blinks to acknoledge actions
+WpsLedBlinkCount = 3
+ShutdownLedBlinkCount = 10
 
 
 import RPi.GPIO as GPIO
 import time
 import datetime
+import logging
 import subprocess
+import sys
 from threading import Timer,Thread,Event
+from daemon import Daemon
 
 
 class ButtonThread(Thread):
@@ -88,34 +97,68 @@ def ledBlinkOff(nbTimes):
       nbTimes = nbTimes - 1
 
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setwarnings(False)
+class YaboxDaemon(Daemon):
+   def run(self):
+   
+      logger = logging.getLogger('yabox')
+      loggerHandler = logging.FileHandler('/tmp/yabox.log')
+      loggerHandler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
+      logger.addHandler(loggerHandler) 
+      logger.setLevel(logging.INFO)
 
-GPIO.setup(ButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(LedPin, GPIO.OUT, initial=GPIO.LOW)
-GPIO.setup(DisableReset, GPIO.OUT, initial=GPIO.HIGH)
-
-GPIO.output(LedPin, True)
-
-buttonThread = ButtonThread(ButtonDebounceDuration, ButtonShortPressDuration, ButtonLongPressDuration)
-buttonThread.start()
-
-while True:
-   print 'Wait for button pressed...'
-   buttonLongPressed = buttonThread.wait()
-   if buttonLongPressed:
-      print 'Button long pressed ==> Shutdown...'
-      ledBlinkOff(5)
-      subprocess.call(['shutdown', '-h', 'now'])
-   else:
-      print 'Button short pressed ==> Try to connect WIFI via WPS...'
-      ledBlinkOff(2)
-      nbTries = 3
-      connected = False
-      while nbTries > 0 and not connected:
-         connected = True if subprocess.call('./wps-connect') == 0 else False
-         time.sleep(2)
-         nbTries = nbTries - 1
-      print '[OK] Connected' if connected else '[ERROR] Fail to connect'
+      logger.info("YaboxDaemon started at " + time.strftime("%c"))
       
-GPIO.cleanup()
+      GPIO.setmode(GPIO.BCM)
+      GPIO.setwarnings(False)
+
+      GPIO.setup(ButtonPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+      GPIO.setup(LedPin, GPIO.OUT, initial=GPIO.LOW)
+      GPIO.setup(DisableReset, GPIO.OUT, initial=GPIO.HIGH)
+
+      GPIO.output(LedPin, True)
+
+      buttonThread = ButtonThread(ButtonDebounceDuration, ButtonShortPressDuration, ButtonLongPressDuration)
+      buttonThread.start()
+
+      while True:
+         logger.info('Wait for button pressed...')
+         buttonLongPressed = buttonThread.wait()
+         if buttonLongPressed:
+            logger.info('Button long pressed ==> Shutdown...')
+            ledBlinkOff(ShutdownLedBlinkCount)
+            subprocess.call(['shutdown', '-h', 'now'])
+         else:
+            logger.info('Button short pressed ==> Try to connect WIFI via WPS...')
+            ledBlinkOff(WpsLedBlinkCount)
+            nbTries = 3
+            connected = False
+            while nbTries > 0 and not connected:
+               connected = True if subprocess.call(['sh', '/opt/yabox/wps-connect.sh']) == 0 else False
+               time.sleep(2)
+               nbTries = nbTries - 1
+            if connected:
+               logger.info('Connected')
+            else:
+               logger.error('Fail to connect')
+            
+      GPIO.cleanup()
+      
+                        
+if __name__ == "__main__":
+   daemon = YaboxDaemon('/tmp/daemon-yabox.pid')
+   if len(sys.argv) == 2:
+      if 'start' == sys.argv[1]:
+         daemon.start()
+      elif 'stop' == sys.argv[1]:
+         daemon.stop()
+      elif 'restart' == sys.argv[1]:
+         daemon.restart()
+      else:
+         print "Unknown command"
+         sys.exit(2)
+      sys.exit(0)
+   else:
+      print "usage: %s start|stop|restart" % sys.argv[0]
+      sys.exit(2)
+
+                

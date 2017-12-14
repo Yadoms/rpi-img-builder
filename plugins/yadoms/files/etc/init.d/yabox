@@ -1,0 +1,31 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          yabox
+# Required-Start:    $local_fs $remote_fs $network ntp
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Yabox daemon
+# Description:       Yabox manage Yabox speicif hardware.
+### END INIT INFO
+DESC="Yabox daemon"
+NAME="yabox"
+DAEMON="sudo python /opt/yabox/$NAME.py"
+
+case "$1" in
+    start)
+        # Start Yabox as 'yadoms' user
+        $DAEMON start
+        ;;
+    stop)
+        # Executed commands launched with "stop" parameter (during system halt)
+        $DAEMON stop
+        ;;
+    reload|restart)
+        $DAEMON restart
+        ;;
+    *)
+        echo "Usage: $0 start|stop|restart|reload"
+        exit 1
+esac
+exit 0

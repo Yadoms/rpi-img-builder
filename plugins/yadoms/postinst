@@ -73,6 +73,12 @@ update-rc.d yadoms defaults
 
 
 ######################################
+echo "Start yabox service at boot..."
+sudo chown -R yadoms:yadoms /opt/yabox/
+update-rc.d yabox defaults
+
+
+######################################
 echo "Localize in Europe/Paris..."
 cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
