@@ -74,7 +74,12 @@ echo 'blacklist cfg80211' >> /etc/modprobe.d/blacklist.conf
 
 
 ######################################
-echo "Start yadoms service at boot..."
+echo "Configure DHCP retry delay..."
+uncomment 'retry 60;' /etc/dhcp/dhclient.conf
+
+
+######################################
+echo "Start Yadoms service at boot..."
 sudo chown -R yadoms:yadoms /opt/yadoms/
 update-rc.d yadoms defaults
 
