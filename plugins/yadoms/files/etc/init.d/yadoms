@@ -17,7 +17,7 @@ case "$1" in
         # Stop the ntp service
         sudo /etc/init.d/ntp stop
         # Force the time synchronization
-        sudo ntpd -q -g
+        sudo ntpdate -s -t 20 fr.pool.ntp.org
         # Restart the ntp service
         sudo /etc/init.d/ntp start
         # Start Yadoms as 'yadoms' user
