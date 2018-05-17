@@ -31,17 +31,11 @@ delete-rootfs:
 build: $(IMAGE_FILE)
 
 $(ROOTFS_DIR).base:
+	if [ "$(QEMUFULL)" = "" ]; then \
+		echo "ERROR: $(QEMU) not found."; \
+		exit 1; \
+	fi
 	rm -f plugins.txt
-	for i in plugins/*; do \
-		if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
-			echo $$i >> plugins.txt; \
-		fi; \
-	done
-	for i in plugins/$(DIST)/*; do \
-		if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
-			echo $$i >> plugins.txt; \
-		fi; \
-	done
 	for j in $(REPOS); do \
 		for i in plugins/$$j/*; do \
 			if [ -f $$i/baseonly -a $$j != $(REPOBASE) ]; then \
@@ -51,6 +45,16 @@ $(ROOTFS_DIR).base:
 				echo $$i >> plugins.txt; \
 			fi; \
 		done; \
+	done
+	for i in plugins/$(DIST)/*; do \
+		if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
+			echo $$i >> plugins.txt; \
+		fi; \
+	done
+	for i in plugins/*; do \
+		if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
+			echo $$i >> plugins.txt; \
+		fi; \
 	done
 	@echo
 	@echo "Building $(IMAGE_FILE)_$(TIMESTAMP).img"
@@ -75,9 +79,11 @@ $(ROOTFS_DIR).base:
 	if test -d "$@.tmp"; then \
 		rm -rf "$@.tmp"; \
 	fi
-	mkdir -p $@.tmp
-	cat $(shell echo multistrap.list.in; for i in $(REPOS); do echo repos/$$i/multistrap.list.in; done | xargs) | sed -e 's,__REPOSITORIES__,$(REPOS),g' -e 's,__SUITE__,$(DIST),g' -e 's,__ARCH__,$(ARCH),g' > multistrap.list
+	mkdir -p $@.tmp/etc/apt/apt.conf.d
+	cp apt.conf $@.tmp/etc/apt/apt.conf.d/00multistrap
+	cat $(shell echo multistrap.list.in; for i in $(REPOS); do echo repos/$$i/multistrap.list.in; done | xargs) | sed -e 's,__REPOSITORIES__,$(REPOS),g' -e 's,__SUITE__,$(DIST),g' -e 's,__FSUITE__,$(FDIST),g' -e 's,__ARCH__,$(ARCH),g' > multistrap.list
 	multistrap --arch $(DARCH) --file multistrap.list --dir $@.tmp 2>multistrap.err || true
+	rm -f $@.tmp/etc/apt/apt.conf.d/00multistrap
 	if [ -f multistrap.err ]; then \
 		if grep -q '^E' multistrap.err; then \
 			echo; \
@@ -91,7 +97,7 @@ $(ROOTFS_DIR).base:
 			exit 1; \
 		fi; \
 	fi
-	cp `which $(QEMU)` $@.tmp/usr/bin
+	cp $(QEMUFULL) $@.tmp/usr/bin
 	mkdir -p $@.tmp/usr/share/fatboothack/overlays
 	if test ! -f $@.tmp/etc/resolv.conf; then \
 		cp /etc/resolv.conf $@.tmp/etc/; \
@@ -152,17 +158,13 @@ $(ROOTFS_DIR): $(ROOTFS_DIR).base
 			sed -i "1i 127.0.0.1\\t$$(cat $@/etc/hostname)" $@/etc/hosts; \
 		fi; \
 	fi
-	if [ -f $(ROOTFS_DIR)/$(BOOT_DIR)/config.txt -a "$(DARCH)" = "arm64" ]; then \
-		if ! grep "arm_64bit=1" $(ROOTFS_DIR)/$(BOOT_DIR)/config.txt > /dev/null; then \
-			echo "arm_64bit=1" >> $(ROOTFS_DIR)/$(BOOT_DIR)/config.txt; \
+	if [ -f $@/$(BOOT_DIR)/config.txt -a "$(DARCH)" = "arm64" ]; then \
+		if ! grep "arm_64bit=1" $@/$(BOOT_DIR)/config.txt > /dev/null; then \
+			echo "arm_64bit=1" >> $@/$(BOOT_DIR)/config.txt; \
 		fi; \
 	fi
-	if [ "$(REPOBASE)" != "Raspbian" -a "$(RPIV)" = "3" ]; then \
-		git clone --depth=1 http://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git tmp; \
-		mkdir -p $@/lib/firmware/brcm; \
-		cp tmp/brcm/brcmfmac43430-sdio.* $@/lib/firmware/brcm/; \
-		rm -rf tmp; \
-	fi
+	mkdir -p $@/lib/firmware/brcm
+	cp brcmfmac43430-sdio.txt $@/lib/firmware/brcm/
 	umount $@/proc
 	umount $@/sys
 	umount $@/dev
