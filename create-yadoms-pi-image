@@ -56,7 +56,7 @@ if [ "$official" = true ]
 then
    wget -O yadoms.tar.gz https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
 else
-   wget -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/travis_build/raspberry_pi/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
+   wget -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/builds/raspberry_pi/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
 fi
 
 echo "Inflate Yadoms package..."
