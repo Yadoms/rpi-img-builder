@@ -67,13 +67,6 @@ update-rc.d owserver defaults
 
 
 ######################################
-echo "Prepare PI3 for wifi activation (but not activated by default)..."
-echo 'blacklist brcmfmac' >> /etc/modprobe.d/blacklist.conf
-echo 'blacklist brcmutil' >> /etc/modprobe.d/blacklist.conf
-echo 'blacklist cfg80211' >> /etc/modprobe.d/blacklist.conf
-
-
-######################################
 echo "Configure DHCP retry delay..."
 uncomment 'retry 60;' /etc/dhcp/dhclient.conf
 
