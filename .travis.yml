@@ -33,6 +33,7 @@ before_install:
 - ./configure --with-libssh2=/usr/local
 - make
 - sudo make install
+- cd ..
 
 script:
 # Yadoms configuration file
@@ -43,4 +44,4 @@ script:
 after_success:
 # Upload image
 - echo 'Upload image to ${YADOMS_UPLOAD_URL}...'
-- /usr/local/opt/curl/bin/curl --ftp-create-dirs -T Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip -k sftp://${FTP_USER}:${FTP_PASSWORD}@${YADOMS_UPLOAD_URL}
+- curl --ftp-create-dirs -T Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip -k sftp://${FTP_USER}:${FTP_PASSWORD}@${YADOMS_UPLOAD_URL}
