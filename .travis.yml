@@ -15,6 +15,9 @@ before_install:
 - echo 'Installing dependancies...'
 - sudo apt-get install build-essential wget git lzop u-boot-tools binfmt-support qemu qemu-user-static multistrap parted dosfstools
 
+# Fix trusty issue with multistrap and forceEyes
+- sudo add-apt-repository ppa:keyz182/multistrap-forceyes-fix
+- sudo apt-get update
 
 script:
 # Yadoms configuration file
