@@ -62,7 +62,7 @@ fi
 echo "Inflate Yadoms package..."
 rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
-tar -zxvf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
+tar zxf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
 rm -f yadoms.tar.gz
 
 echo "Build the image..."
