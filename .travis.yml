@@ -1,29 +1,13 @@
-language: generic
-
-#TODO : trusty is too old Ubuntu distribution, so this script doesn't work for now.
-#TODO : We have to wait a newer distribution (works with 17.04) to make Pi image generation from Travis.
+language: cpp
 dist: trusty
+
 sudo: required
 
-#limit to git depth to 1 because don't use any git command in this script
-git:
-  depth: 1
+services:
+  - docker
   
-
 before_install:
-# Installing dependancies
-- echo 'Installing dependancies...'
-- sudo apt-get install build-essential wget git lzop u-boot-tools binfmt-support qemu qemu-user-static multistrap parted dosfstools
-
-
+  - docker pull yadoms/build_for_raspberrypi_image
+  
 script:
-# Yadoms configuration file
-- echo 'Start creating image...'
-- sudo ./create-yadoms-pi-image ${YADOMS_VERSION}
-
-
-after_success:
-# Upload image
-- echo 'Upload image to ${YADOMS_UPLOAD_URL}...'
-- curl --ftp-create-dirs -T Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip -u $FTP_USER:$FTP_PASSWORD ${YADOMS_UPLOAD_URL}
-
+  - docker run -e YADOMS_VERSION=${YADOMS_VERSION} -e UPLOAD_FTP_CREDENTIALS=${FTP_USER}:${FTP_PASSWORD} yadoms/build_for_raspberrypi_image
