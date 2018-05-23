@@ -32,7 +32,7 @@ before_install:
 - cd curl-7.60.0
 - ./configure --with-libssh2=/usr/local
 - make
-- make install
+- sudo make install
 
 script:
 # Yadoms configuration file
