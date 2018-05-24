@@ -140,6 +140,7 @@ $(ROOTFS_DIR): $(ROOTFS_DIR).base
 	mount -o bind /sys $@/sys
 	mount -o bind /dev $@/dev
 	file /bin/bash
+	file `which chroot`
 	chroot $@ /bin/bash -c "/postinstall $(DIST) $(ARCH) $(LOCALE) $(UNAME) $(UPASS) $(RPASS) $(INC_REC) $(UBOOT_DIR)"
 	for i in $$(cat plugins.txt | xargs); do \
 		if [ -d $$i/patches ]; then \
