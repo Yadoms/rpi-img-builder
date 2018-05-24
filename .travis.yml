@@ -11,10 +11,29 @@ git:
   
 
 before_install:
+# Fix trusty issue with multistrap and forceEyes
+- sudo add-apt-repository -y ppa:keyz182/multistrap-forceyes-fix
+- sudo apt-get update
+
 # Installing dependancies
 - echo 'Installing dependancies...'
 - sudo apt-get install build-essential wget git lzop u-boot-tools binfmt-support qemu qemu-user-static multistrap parted dosfstools
 
+# build curl with sftp support (needed to upload image)
+- wget -q https://www.libssh2.org/download/libssh2-1.8.0.tar.gz
+- tar xzf libssh2-1.8.0.tar.gz
+- cd libssh2-1.8.0/
+- ./configure
+- make
+- sudo make install
+- cd ..
+- wget -q https://curl.haxx.se/download/curl-7.60.0.tar.gz
+- tar xzf curl-7.60.0.tar.gz
+- cd curl-7.60.0
+- ./configure --with-libssh2=/usr/local
+- make
+- sudo make install
+- cd ..
 
 script:
 # Yadoms configuration file
@@ -25,5 +44,4 @@ script:
 after_success:
 # Upload image
 - echo 'Upload image to ${YADOMS_UPLOAD_URL}...'
-- curl --ftp-create-dirs -T Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip -u $FTP_USER:$FTP_PASSWORD ${YADOMS_UPLOAD_URL}
-
+- curl --ftp-create-dirs -T Yadoms-${YADOMS_VERSION}-RaspberryPI.img.zip -k sftp://${FTP_USER}:${FTP_PASSWORD}@${YADOMS_UPLOAD_URL}
