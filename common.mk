@@ -1,4 +1,4 @@
-DIST ?= jessie
+DIST ?= stretch
 REPO ?= Raspbian
 RPI ?= 2
 DIST_ARCH ?= armhf
@@ -11,6 +11,7 @@ IMAGE_MB ?= -1
 BOOT_MB ?= 128
 INC_REC ?= 0
 
+FDIST := stretch
 REPOBASE := Raspbian
 REPOS := $(REPO)
 RPIV := $(RPI)
@@ -29,7 +30,7 @@ ifeq ($(findstring Raspbian,$(REPOS)),Raspbian)
 	ARCH := rpix
 else ifeq ($(findstring Ubuntu,$(REPOS)),Ubuntu)
 	REPOBASE := Ubuntu
-	ifeq ($(findstring jessie,$(DIST)),jessie)
+	ifeq ($(findstring stretch,$(DIST)),stretch)
 		DIST := yakkety
 	endif
 	BOOT_DIR := boot/firmware
@@ -76,3 +77,14 @@ ROOT_DEV := /dev/mmcblk0p2
 BASE_DIR := $(shell pwd)
 ROOTFS_DIR := $(BASE_DIR)/rootfs
 IMAGE_FILE := $(REPOBASE)-$(DIST)-$(ARCH)
+
+ifeq ($(DIST),$(filter $(DIST), wheezy oldoldstable))
+	FDIST := wheezy
+else ifeq ($(DIST),$(filter $(DIST), jessie oldstable))
+	FDIST := jessie
+endif
+
+QEMUFULL := $(shell which qemu-arm-static)
+ifeq ("$(wildcard $(QEMUFULL))","")
+	QEMUFULL := ""
+endif
