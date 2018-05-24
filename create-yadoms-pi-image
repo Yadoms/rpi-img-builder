@@ -54,15 +54,15 @@ echo "Download Yadoms package..."
 rm -f Yadoms-*-RaspberryPI.tar.bz2
 if [ "$official" = true ]
 then
-   wget -O yadoms.tar.gz https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
+   wget -q -O yadoms.tar.gz https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
 else
-   wget -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/travis_build/raspberry_pi/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
+   wget -q -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/travis_build/raspberry_pi/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
 fi
 
 echo "Inflate Yadoms package..."
 rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
-tar -zxvf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
+tar -zxf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
 rm -f yadoms.tar.gz
 
 echo "Build the image..."
