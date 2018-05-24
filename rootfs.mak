@@ -130,7 +130,7 @@ $(ROOTFS_DIR): $(ROOTFS_DIR).base
 	done
 	chmod +x $@/postinst/*
 	cp postinstall $@
-   chmod +x $@/postinstall
+   chmod +x "$@/postinstall"
 	mount -o bind /proc $@/proc
 	mount -o bind /sys $@/sys
 	mount -o bind /dev $@/dev
