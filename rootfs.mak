@@ -129,8 +129,8 @@ $(ROOTFS_DIR): $(ROOTFS_DIR).base
 		fi; \
 	done
 	chmod +x $@/postinst/*
+   chmod +x postinstall
 	cp postinstall $@
-   chmod +x "$@/postinstall"
 	mount -o bind /proc $@/proc
 	mount -o bind /sys $@/sys
 	mount -o bind /dev $@/dev
