@@ -32,6 +32,11 @@ function comment
 
 
 ######################################
+echo "Enable SSH..."
+touch /ssh
+
+
+######################################
 echo "Enable UART..."
 echo 'enable_uart=1' >> /boot/config.txt
 
