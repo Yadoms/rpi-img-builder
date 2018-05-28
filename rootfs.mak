@@ -41,9 +41,9 @@ $(ROOTFS_DIR).base:
 			if [ -f $$i/baseonly -a $$j != $(REPOBASE) ]; then \
 				continue; \
 			fi; \
-		if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
-			echo $$i >> plugins.txt; \
-		fi; \
+			if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
+				echo $$i >> plugins.txt; \
+			fi; \
 		done; \
 	done
 	for i in plugins/$(DIST)/*; do \
@@ -52,9 +52,9 @@ $(ROOTFS_DIR).base:
 		fi; \
 	done
 	for i in plugins/*; do \
-			if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
-				echo $$i >> plugins.txt; \
-			fi; \
+		if [ -f $$i/packages -o -f $$i/preinst -o -f $$i/postinst -o -d $$i/files -o -d $$i/patches ]; then \
+			echo $$i >> plugins.txt; \
+		fi; \
 	done
 	@echo
 	@echo "Building $(IMAGE_FILE)_$(TIMESTAMP).img"
