@@ -1,0 +1,6 @@
+
+case $reason in
+	BOUND|RENEW|REBIND|REBOOT)
+		sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
+		;;
+esac

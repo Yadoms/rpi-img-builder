@@ -17,11 +17,9 @@ case "$1" in
         # Stop the ntp service
         sudo /etc/init.d/ntp stop
         # Force the time synchronization
-        sudo ntpd -q -g
+        sudo ntpdate -s -t 20 fr.pool.ntp.org
         # Restart the ntp service
         sudo /etc/init.d/ntp start
-        # Ports 0-1024 can only be opened by root, so set a port route 
-        sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8080
         # Start Yadoms as 'yadoms' user
         sudo -u yadoms $DAEMON --daemon
         ;;
