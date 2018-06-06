@@ -65,6 +65,9 @@ mkdir -p plugins/yadoms/files/opt/yadoms
 tar zxf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
 rm -f yadoms.tar.gz
 
+echo "Add Wifi support (enable plugin hostap)"
+mv plugins/disabled/hostap plugins
+
 echo "Build the image..."
 rm -f *.img
 rm -f *.img.zip
