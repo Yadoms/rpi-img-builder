@@ -33,7 +33,7 @@ function comment
 
 ######################################
 echo "Enable SSH..."
-touch /ssh
+touch /boot/ssh
 
 
 ######################################

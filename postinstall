@@ -91,7 +91,10 @@ done
 
 apt-get update
 
-APTOPTS="-y --assume-yes --force-yes"
+#Update APTOPTS because --force-yes is deprecated
+#APTOPTS="-y --assume-yes --force-yes"
+APTOPTS="-y --assume-yes --ignore-hold --allow-unauthenticated --allow-downgrades --allow-remove-essential --allow-change-held-packages"
+
 if [ "$INC_REC" == "0" ]; then
 	APTOPTS="$APTOPTS --no-install-recommends";
 fi
