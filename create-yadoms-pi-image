@@ -7,16 +7,8 @@ function error
 {
   echo
   echo "This script creates the Yadoms Pi image"
-  echo "  It downloads the RaspberryPI Yadoms package and creates the image"
-  echo
   echo "usage :"
-  echo "  ./create-yadoms-pi-image.sh {version} [github]"
-  echo
-  echo "with :"
-  echo "  - {version} : something like 2.0.0-rc.4"
-  echo "  - [github] : if given, download Yadoms package from Github releases repo"
-  echo "               if not given, download Yadoms package from Yadoms.com (www.yadoms.com/builds/raspberry_pi)"
-  echo
+  echo "  ./create-yadoms-pi-image.sh"
   exit 1
 }
 
@@ -33,37 +25,14 @@ if [ "$(whoami)" != "root" ]; then
   error
 fi
 
-if [ -z "$1" ]
-then
-  echo "Yadoms version is missing"
-  error
-else
-  yadomsVersion=$1
-fi
-
-if [ -z "$2" ]
-then
-  echo "*** Get Yadoms package from Yadoms.com ***"
-  github=false
-else
-  echo "*** Get Yadoms package from Github releases ***"
-  github=true
-fi
-
-echo "Download Yadoms package..."
-rm -f Yadoms-*-RaspberryPI.tar.bz2
-if [ "$github" = true ]
-then
-   wget -q -O yadoms.tar.gz https://github.com/Yadoms/yadoms/releases/download/$yadomsVersion/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
-else
-   wget -q -U 'yadomsAgent/1.0' -O yadoms.tar.gz http://yadoms.com/builds/raspberry_pi/Yadoms-$yadomsVersion-RaspberryPI.tar.gz
-fi
+#retreive version from currently built file
+export yadomsVersion=`ls /yadoms/builds/package/Yadoms*.tar.gz | head -1 | grep -oP '(?<=-).*(?=-)'`
+echo "Found Yadoms : $yadomsVersion"
 
 echo "Inflate Yadoms package..."
 rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
-tar zxf yadoms.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
-rm -f yadoms.tar.gz
+tar zxf /yadoms/builds/package/Yadoms-$yadomsVersion-RaspberryPI.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
 
 echo "Add Wifi support (enable plugin hostap)"
 mv plugins/disabled/hostap plugins
@@ -78,6 +47,6 @@ imgFile=$(find . -maxdepth 1 -name "*.img")
 mv $imgFile Yadoms-$yadomsVersion-RaspberryPI.img
 
 echo "Zip image file..."
-zip Yadoms-$yadomsVersion-RaspberryPI.img.zip Yadoms-$yadomsVersion-RaspberryPI.img
+zip /yadoms/builds/package/Yadoms-$yadomsVersion-RaspberryPI.img.zip Yadoms-$yadomsVersion-RaspberryPI.img
 
 exit 0
