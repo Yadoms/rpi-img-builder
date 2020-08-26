@@ -33,6 +33,8 @@ if [ "$(whoami)" != "root" ]; then
   error
 fi
 
+apt-get install rsync build-essential wget git lzop u-boot-tools binfmt-support qemu qemu-user-static multistrap parted dosfstools
+
 #retreive version from currently built file
 export yadomsVersion=`ls $yadomsBasePath/builds/package/Yadoms*.tar.gz | head -1 | grep -oP '(?<=-).*(?=-)'`
 echo "Found Yadoms : $yadomsVersion"
