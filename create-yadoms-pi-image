@@ -8,9 +8,17 @@ function error
   echo
   echo "This script creates the Yadoms Pi image"
   echo "usage :"
-  echo "  ./create-yadoms-pi-image.sh"
+  echo "  ./create-yadoms-pi-image.sh [yadomsBuildPath]"
   exit 1
 }
+
+if [ -z "$1" ];
+then
+yadomsBasePath=/yadoms
+else
+yadomsBasePath=$1
+fi
+  
 
 # Some constants
 # - Image user account login/password
@@ -26,13 +34,13 @@ if [ "$(whoami)" != "root" ]; then
 fi
 
 #retreive version from currently built file
-export yadomsVersion=`ls /yadoms/builds/package/Yadoms*.tar.gz | head -1 | grep -oP '(?<=-).*(?=-)'`
+export yadomsVersion=`ls $yadomsBasePath/builds/package/Yadoms*.tar.gz | head -1 | grep -oP '(?<=-).*(?=-)'`
 echo "Found Yadoms : $yadomsVersion"
 
 echo "Inflate Yadoms package..."
 rm -rf plugins/yadoms/files/opt/yadoms
 mkdir -p plugins/yadoms/files/opt/yadoms
-tar zxf /yadoms/builds/package/Yadoms-$yadomsVersion-RaspberryPI.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
+tar zxf $yadomsBasePath/builds/package/Yadoms-$yadomsVersion-RaspberryPI.tar.gz -C plugins/yadoms/files/opt/yadoms --strip 2
 
 echo "Add Wifi support (enable plugin hostap)"
 mv plugins/disabled/hostap plugins
@@ -47,6 +55,6 @@ imgFile=$(find . -maxdepth 1 -name "*.img")
 mv $imgFile Yadoms-$yadomsVersion-RaspberryPI.img
 
 echo "Zip image file..."
-zip /yadoms/builds/package/Yadoms-$yadomsVersion-RaspberryPI.img.zip Yadoms-$yadomsVersion-RaspberryPI.img
+zip $yadomsBasePath/builds/package/Yadoms-$yadomsVersion-RaspberryPI.img.zip Yadoms-$yadomsVersion-RaspberryPI.img
 
 exit 0
