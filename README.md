@@ -8,7 +8,7 @@ All these scripts are linux compatible, tested under Ubuntu 17.04.
 > Image will be created with user `yadoms` (password `yadoms2017`)
 > Root password is `yadoms2017`
 
-# Dependancies
+# Dependencies
 
 You first need to install these packages :
 
